@@ -34,8 +34,8 @@ staticfiles/
 Thumbs.db
 
 # Migrations (optional)
-# */migrations/*
-# !*/migrations/__init__.py
+*/migrations/*
+!*/migrations/__init__.py
 
 # Coverage
 .coverage
@@ -88,3 +88,5 @@ node_modules/
 # Temporary files
 tmp/
 temp/
+
+local.py
