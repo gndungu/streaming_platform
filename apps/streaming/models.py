@@ -1,4 +1,9 @@
 from django.db import models
+from django.conf import settings
+from apps.accounts.models import UserSession
+from apps.content.models import VideoSource
+
+User = settings.AUTH_USER_MODEL
 
 
 class WatchHistory(models.Model):

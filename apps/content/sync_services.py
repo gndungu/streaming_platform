@@ -1,6 +1,7 @@
 from django.utils import timezone
 
 from apps.content.tmdb_client import TMDbClient
+from apps.streaming.models import HLSStream
 from apps.content.models import (
     Movie,
     TVSeries,
@@ -11,6 +12,7 @@ from apps.content.models import (
     ProductionCompany,
     Country,
     Language,
+    VideoSource
 )
 
 
@@ -93,6 +95,11 @@ def sync_movie(tmdb_id):
             )
             countries.append(obj)
         movie.production_countries.set(countries)
+    
+    create_video_sources(
+        content_type="movie",
+        content_id=movie.id
+    )
 
     return movie
 
@@ -162,9 +169,107 @@ def sync_tv_series(tmdb_id):
                     "vote_count": ep.get("vote_count", 0),
                 }
             )
+            
+            # Create streaming sources
+            create_video_sources(
+                content_type="episode",
+                content_id=episode.id
+            )
 
     return series
 
+
+def create_video_sources(
+    content_type,
+    content_id
+):
+
+    qualities = [
+        "360p",
+        "480p",
+        "720p",
+        "1080p"
+    ]
+
+    for quality in qualities:
+
+        video, created = VideoSource.objects.get_or_create(
+            content_type=content_type,
+            content_id=content_id,
+            quality=quality,
+
+            defaults={
+
+                # Example URLs
+                "url":
+                    f"https://cdn.streamix.com/"
+                    f"{content_type}/"
+                    f"{content_id}/"
+                    f"{quality}.mp4",
+
+                "is_hls": True,
+
+                "master_playlist_url":
+                    f"https://cdn.streamix.com/"
+                    f"hls/{content_type}/"
+                    f"{content_id}/master.m3u8",
+
+                "file_size_mb":
+                    1500,
+
+                "duration_seconds":
+                    7200,
+
+                "is_active": True,
+
+                "is_available": True,
+            }
+        )
+
+        create_hls_stream(video)
+
+
+def create_hls_stream(video_source):
+
+    HLSStream.objects.get_or_create(
+        video_source=video_source,
+
+        defaults={
+
+            "master_playlist_url":
+                video_source.master_playlist_url,
+
+            "variants": {
+
+                "360p":
+                    f"https://cdn.streamix.com/hls/"
+                    f"{video_source.content_type}/"
+                    f"{video_source.content_id}/360p.m3u8",
+
+                "480p":
+                    f"https://cdn.streamix.com/hls/"
+                    f"{video_source.content_type}/"
+                    f"{video_source.content_id}/480p.m3u8",
+
+                "720p":
+                    f"https://cdn.streamix.com/hls/"
+                    f"{video_source.content_type}/"
+                    f"{video_source.content_id}/720p.m3u8",
+
+                "1080p":
+                    f"https://cdn.streamix.com/hls/"
+                    f"{video_source.content_type}/"
+                    f"{video_source.content_id}/1080p.m3u8",
+            },
+
+            "bandwidth_info": {
+                "360p": 800000,
+                "480p": 1200000,
+                "720p": 2500000,
+                "1080p": 5000000,
+            }
+        }
+    )
 
 # ---------------------------
 # BATCH SYNC HELPERS
