@@ -13,6 +13,7 @@ import Loader from "../components/Loader";
 
 import VideoPlayer
   from "../components/VideoPlayer";
+import HLSPlayer from "../components/HLSPlayer"
 
 import QualitySelector
   from "../components/QualitySelector";
@@ -76,7 +77,7 @@ export default function WatchPage() {
 
       <div className="max-w-7xl mx-auto px-6 py-8">
 
-        <VideoPlayer
+        <HLSPlayer
           source={selectedSource}
         />
 

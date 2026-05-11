@@ -44,6 +44,8 @@ def sync_genres(genres_data, model):
 def sync_movie(tmdb_id):
     data = client.get_movie(tmdb_id)
 
+    print(data)
+
     movie, created = Movie.objects.update_or_create(
         tmdb_id=data["id"],
         defaults={

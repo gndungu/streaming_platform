@@ -44,7 +44,7 @@ class WatchMovieAPIView(
     RetrieveAPIView
 ):
 
-    permission_classes = [IsAuthenticated]
+    # permission_classes = [IsAuthenticated]
 
     queryset = Movie.objects.filter(
         is_active=True
