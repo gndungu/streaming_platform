@@ -40,17 +40,17 @@ from .serializers import (
 # WATCH MOVIE
 # =====================================
 
-class WatchMovieAPIView(
-    RetrieveAPIView
-):
-
+class WatchMovieAPIView(RetrieveAPIView):
     # permission_classes = [IsAuthenticated]
-
     queryset = Movie.objects.filter(
         is_active=True
     )
-
     serializer_class = MovieStreamSerializer
+
+    def get_serializer_context(self):
+        context = super().get_serializer_context()
+        context["request"] = self.request
+        return context
 
 
 # =====================================

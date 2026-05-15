@@ -272,7 +272,8 @@ class VideoSource(models.Model):
     quality = models.CharField(max_length=10, choices=QUALITY_CHOICES)
     
     # Storage
-    url = models.URLField(max_length=1000)  # Direct URL or CDN URL
+    file = models.FileField(upload_to='videos/', null=True, blank=True)
+    url = models.URLField(max_length=1000, null=True, blank=True)  # Direct URL or CDN URL
     file_size_mb = models.FloatField(null=True, blank=True)
     duration_seconds = models.IntegerField(null=True, blank=True)
     

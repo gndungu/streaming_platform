@@ -27,8 +27,19 @@ DEBUG = True
 
 ALLOWED_HOSTS = ['*']
 
+CORS_ALLOW_CREDENTIALS = True
+
 CORS_ALLOWED_ORIGINS = [
-    "http://localhost:5173",
+    "http://localhost:5173", 
+    "http://192.168.100.201:5173", 
+    "http://127.0.0.1:8000", 
+    "http://192.168.100.201:5173"
+]
+
+CSRF_TRUSTED_ORIGINS = [
+    "http://localhost:5173", 
+    "http://127.0.0.1:5173", ""
+    "http://192.168.100.201:5173"
 ]
 
 
@@ -130,6 +141,9 @@ USE_TZ = True
 
 STATIC_URL = 'static/'
 
+MEDIA_URL = '/media/'
+MEDIA_ROOT = BASE_DIR / 'media'
+
 AUTH_USER_MODEL = 'accounts.User'
 
 CELERY_BROKER_URL = 'redis://127.0.0.1:6379/0'
@@ -155,6 +169,15 @@ REST_FRAMEWORK = {
 REST_FRAMEWORK = {
     'DEFAULT_PAGINATION_CLASS': 'apps.content.pagination.DefaultPagination',
     'PAGE_SIZE': 20,
+    "DEFAULT_AUTHENTICATION_CLASSES": (
+        "rest_framework_simplejwt.authentication.JWTAuthentication",
+    )
 }
+
+
+USE_X_FORWARDED_HOST = True
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+
+
 
 from .local import *

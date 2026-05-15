@@ -26,6 +26,7 @@ class HLSStreamSerializer(serializers.ModelSerializer):
 
 
 class VideoSourceSerializer(serializers.ModelSerializer):
+    file = serializers.SerializerMethodField()
 
     hls_stream = HLSStreamSerializer(
         read_only=True
@@ -37,12 +38,28 @@ class VideoSourceSerializer(serializers.ModelSerializer):
             "id",
             "quality",
             "url",
+            "file",
+            "storage_path",
             "is_hls",
             "duration_seconds",
             "file_size_mb",
             "master_playlist_url",
             "hls_stream"
         ]
+    
+    def get_file(self, obj):
+        request = self.context.get("request")
+        print("=====", request)
+
+        if not obj.file:
+            return None
+
+        url = obj.file.url
+
+        if request:
+            return request.build_absolute_uri(url)
+
+        return url
 
 
 class MovieStreamSerializer(
@@ -66,6 +83,8 @@ class MovieStreamSerializer(
 
     def get_video_sources(self, obj):
 
+        request = self.context.get("request")
+
         videos = VideoSource.objects.filter(
                 content_type="movie",
                 content_id=obj.id,
@@ -75,7 +94,8 @@ class MovieStreamSerializer(
 
         return VideoSourceSerializer(
             videos,
-            many=True
+            many=True,
+            context={"request": request} 
         ).data
 
 

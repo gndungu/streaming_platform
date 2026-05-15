@@ -16,6 +16,8 @@ import MoviesPage
 
 import SeriesPage
   from "../pages/SeriesPage";
+import RegisterPage from "../pages/RegisterPage";
+import LoginPage from "../pages/LoginPage";
 
 const router =
   createBrowserRouter([
@@ -43,6 +45,16 @@ const router =
     {
       path: "/watch/:type/:id",
       element: <WatchPage />
+    },
+
+    {
+      path: "/register",
+      element: <RegisterPage />
+    },
+
+    {
+      path: "/login",
+      element: <LoginPage />
     }
   ]);
 
